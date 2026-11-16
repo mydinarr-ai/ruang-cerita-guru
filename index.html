@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruang Cerita Guru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f6f5; --card:#ffffff; --ink:#14202b; --muted:#5b6b7a; --line:#e3e9e7;
+  --brand:#0d9488; --brand-d:#0f766e; --brand-dd:#115e59; --brand-l:#e0f5f1;
+  --accent:#f59e0b; --accent-d:#b45309; --accent-l:#fff4dc;
+  --danger:#c0392b; --ok:#15803d; --radius:18px;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 10px 28px rgba(16,40,50,.07);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);
+  background-image:radial-gradient(900px 420px at 85% -80px,#c9efe8 0%,transparent 70%),radial-gradient(700px 360px at -10% 0,#ffefc7 0%,transparent 65%);
+  background-repeat:no-repeat;color:var(--ink);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px 8px}
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;
+  padding:12px 4px;margin:0 -4px 6px;background:rgba(243,246,245,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:var(--brand-dd);letter-spacing:-.3px;line-height:1.15}
+.logo .mark{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:21px;color:#fff;
+  background:linear-gradient(135deg,#14b8a6,#0f766e);box-shadow:0 6px 14px rgba(15,118,110,.35)}
+.logo small{display:block;font-weight:500;font-size:12px;color:var(--muted);letter-spacing:0}
+.stepper{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;margin-bottom:6px;scrollbar-width:none}
+.stepper::-webkit-scrollbar{display:none}
+.stepper button{flex:1 0 auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);padding:7px 14px 7px 8px;
+  border-radius:999px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);white-space:nowrap;transition:.15s}
+.stepper button i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:#eef2f1;color:var(--muted)}
+.stepper button:hover{border-color:var(--brand);color:var(--brand-dd)}
+.stepper button.done:not(.on){color:var(--brand-dd)}
+.stepper button.done:not(.on) i{background:var(--brand-l);color:var(--brand-d)}
+.stepper button.on{background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(15,118,110,.32)}
+.stepper button.on i{background:rgba(255,255,255,.25);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 4px;font-size:22px;letter-spacing:-.4px}
+.card h3{margin:0 0 6px;font-size:16px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:14.5px}
+label{display:block;font-weight:700;font-size:13px;color:#2b3b49;margin:14px 0 5px}
+input[type=text],textarea,select{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:15px;background:#fbfdfc;color:var(--ink);transition:.15s}
+textarea{min-height:80px;resize:vertical}
+input:hover,textarea:hover,select:hover{border-color:#c8d4d1}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 4px rgba(13,148,136,.15)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:620px){.row{grid-template-columns:1fr}.card{padding:16px}}
+button.btn{font:inherit;font-weight:700;font-size:14.5px;border:0;border-radius:12px;padding:11px 18px;cursor:pointer;color:#fff;
+  background:linear-gradient(135deg,#14b8a6,#0f766e);box-shadow:0 4px 12px rgba(15,118,110,.28);transition:transform .12s,box-shadow .12s,filter .12s}
+button.btn:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(15,118,110,.34);filter:brightness(1.04)}
+button.btn:active{transform:translateY(0)}
+button.btn.alt{background:#fff;color:var(--brand-dd);border:1.5px solid #b7e1da;box-shadow:none}
+button.btn.alt:hover{background:var(--brand-l);box-shadow:none}
+button.btn.warn{background:#fff;color:var(--danger);border:1.5px solid #f3c6c0;box-shadow:none}
+button.btn.warn:hover{background:#fdf0ee;box-shadow:none}
+button.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+button.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;filter:none}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.spacer{flex:1}
+.err{background:#fdf0ee;border:1px solid #f3c6c0;color:var(--danger);padding:12px 14px;border-radius:12px;margin-bottom:14px;font-size:14px}
+.note{background:var(--accent-l);border:1px solid #f6dca0;border-left:4px solid var(--accent);padding:11px 14px;border-radius:12px;font-size:14px;margin:12px 0}
+.okbox{background:var(--brand-l);border:1px solid #b7e1da;border-left:4px solid var(--brand);padding:11px 14px;border-radius:12px;font-size:14px;margin:12px 0}
+.pipe{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0;font-size:13px;font-weight:700}
+.pipe span{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 6px;color:var(--brand-dd)}
+.pipe span i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;color:#fff;background:linear-gradient(135deg,#14b8a6,#0f766e)}
+.pipe em{font-style:normal;color:#9fb0ad}
+.ideas{display:grid;gap:12px;margin-top:14px}
+.idea{border:1.5px solid var(--line);border-radius:14px;padding:14px;background:linear-gradient(180deg,#fff,#f8fbfa);transition:.15s}
+.idea:hover{border-color:#9ad8cf;box-shadow:0 6px 18px rgba(15,118,110,.1)}
+.idea b{display:block;margin-bottom:3px;font-size:15.5px}
+.scene{border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:16px;padding:16px;margin-top:14px;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.scene .hd{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.scene .no{background:linear-gradient(135deg,#14b8a6,#0f766e);color:#fff;border-radius:10px;min-width:34px;height:34px;display:grid;place-items:center;font-weight:800;font-size:15px;box-shadow:0 4px 10px rgba(15,118,110,.3)}
+.dl{display:grid;grid-template-columns:130px 1fr auto;gap:8px;margin-top:6px;align-items:center}
+@media(max-width:620px){.dl{grid-template-columns:1fr auto}.dl input:first-child{grid-column:1/-1}}
+details{margin-top:12px;border:1.5px dashed #cfdad7;border-radius:12px;padding:9px 14px;background:#fafcfb}
+details[open]{background:#fff}
+details summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--brand-dd)}
+.small{font-size:13px;color:var(--muted)}
+.warnline{font-size:13px;color:var(--accent-d);margin-top:5px;min-height:18px}
+.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:8px}
+.styles label{margin:0;font-weight:500;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;background:#fff;transition:.15s}
+.styles label:hover{border-color:#9ad8cf;transform:translateY(-1px)}
+.styles label.on{border-color:var(--brand);background:var(--brand-l);box-shadow:0 0 0 3px rgba(13,148,136,.14)}
+.styles input{display:none}
+.styles b{display:block;font-size:14.5px;color:var(--ink)}
+.styles span{font-size:12.5px;color:var(--muted)}
+.pbox{position:relative;margin-top:10px}
+.pbox textarea{font-family:ui-monospace,"Cascadia Code",Consolas,monospace;font-size:12.5px;line-height:1.55;min-height:100px;background:#f6f9f8;border-color:#dbe5e2}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.3px;padding:3px 10px;border-radius:999px;background:var(--brand-l);color:var(--brand-dd);margin:0 6px 4px 0}
+.tag.v{background:var(--accent-l);color:var(--accent-d)}
+.chips span{display:inline-block;background:#eef3f2;border-radius:999px;padding:3px 11px;font-size:12px;font-weight:600;margin:2px 5px 2px 0;color:#34495a}
+.hero{position:relative;overflow:hidden;text-align:center;padding:44px 22px 36px;border:0;color:#fff;
+  background:linear-gradient(135deg,#0d9488 0%,#0f766e 55%,#115e59 100%);box-shadow:0 18px 40px rgba(15,118,110,.32)}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero::before{width:300px;height:300px;right:-90px;top:-110px}
+.hero::after{width:220px;height:220px;left:-70px;bottom:-100px;background:rgba(245,158,11,.22)}
+.hero>*{position:relative;z-index:1}
+.hero .badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:5px 14px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.3px}
+.hero h1{font-size:clamp(30px,6vw,44px);margin:14px 0 8px;letter-spacing:-1px;line-height:1.1}
+.hero p{margin:0 auto;max-width:520px;font-size:16.5px;opacity:.95}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:26px auto 4px;max-width:720px;text-align:left}
+.tiles div{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:12px 14px;font-size:13.5px}
+.tiles b{display:block;font-size:14.5px;margin-bottom:2px}
+.tiles i{font-style:normal;font-size:20px;display:block;margin-bottom:4px}
+.hero button.btn{background:#fff;color:var(--brand-dd);box-shadow:0 8px 20px rgba(0,0,0,.2);padding:13px 24px;font-size:15.5px}
+.hero button.btn.alt{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.6);box-shadow:none}
+.hero button.btn.alt:hover{background:rgba(255,255,255,.14)}
+.flow li{margin-bottom:9px}
+.flow ol,.flow ul{padding-left:22px}
+.flow h3{margin-top:18px;color:var(--brand-dd)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px 8px 34px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#14202b;color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:50;box-shadow:0 10px 28px rgba(0,0,0,.3);max-width:92vw;text-align:center}
+.modal{position:fixed;inset:0;background:rgba(10,25,30,.5);backdrop-filter:blur(3px);display:grid;place-items:center;z-index:60;padding:16px}
+.modal .box{background:#fff;border-radius:18px;padding:22px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;margin:0;color:var(--ok)}
+.chk input{width:auto}
+.credit{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;color:var(--ink);font-weight:700;font-size:13.5px;text-align:left}
+.credit img{width:42px;height:42px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(16,40,50,.12)}
+.credit small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.hero .by{display:inline-flex;align-items:center;gap:10px;margin-top:22px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 18px 6px 6px;font-size:13px;font-weight:600;text-align:left}
+.hero .by img{width:38px;height:38px;border-radius:50%;background:#fff}
+.hero .by small{display:block;font-weight:500;opacity:.85;font-size:11.5px}
+.scene img,.pbox img{box-shadow:0 8px 22px rgba(16,40,50,.16)}
+@media(max-width:700px){header.top{position:static;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(max-width:600px){
+  .wrap{padding:0 2px 6px}
+  header.top{padding:8px 6px}
+  .card{padding:14px;border-radius:14px;margin-bottom:10px}
+  .hero{margin-top:4px!important;padding:26px 14px 22px;border-radius:16px}
+  .tiles{grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+  .tiles div{padding:10px 11px;font-size:12.5px}
+  .tiles b{font-size:13.5px}
+  .hero .by{font-size:12.5px;padding:5px 16px 5px 5px}
+  .stepper{padding:4px 4px 8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="overlay"></div>
+
+<script>
+/* ================== KONFIGURASI ================== */
+const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAMAAABC4vDmAAAACXBIWXMAAAAAAAAAAQCEeRdzAAADAFBMVEUAAAEBAgYDA/ADBR0EBEwFBeAGCmcHBJ4HCAMIB/0LCcsMCLkWFdobEiYbGIQeGA8xLVc0KiU4NMlAPTJGQqtPTn1QTuRUU1RXVDBbV81iYbNlZnhvbuJxcWd0dMN0dY13dTaFhtqGirSLjJGPkYaUkz2cnuyhp9Cio6morJSvtD2zuui0t73DyPPEydDFy7jJ0UrV2vHj5+Dl6vbl7Gnt9N3u99Hv9B/w8+z09fz3+fP8/iD9/vr9/+3+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v4A/wAeixHFAAABAHRSTlP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AU/cHJQAAEABJREFUeJzdfGlzG1eW5X1bvlyxgyAJQtRmy1Wu6oruiImYT/P759NEd3W5y4ssiuIGEDtzQb594iUoWXJJLrpdNXZM2iZpEMw8ed/Nu5x7HtD/gt/eQeE3eFD4DR4UfoMHhd/gQeE3eFD4DR4U/n8EZS0GS0FRhSgYxxQDBQws/lVBYVwmIBkgihzGuwiAAWgb/JqgaBkkEgWKUg0AONIWMP2Fp/3FoFTAINBFAJvFUeKU5hhba39lUBSgDFgMq1VvehgaBLaByn5VUFrGhNpdvpqo9M2or7ExjtJfOyQkjsN6LT+7mP1uNN92g2T/RP6qoIwxea56vauZ+e7pSXmVFT32CzH9HFDWAnFIM4sM9U4jKYARen7X6rXuzmcA4qzd+/J2edlth5CABgoKqEOCax+9/hmgLADGgBR1FsMupDVnuihqAYPD8O5iZggFUAszH6d2uxJpyTKswQdSCDXdcYf+GaCQa55zpkAGDENdbzZaHPSCsC6neQVcUAAqcrHuDjt9XRYr1E4TGhruygBFiv6cJX0wKAdUMcWsCRIo5VraIG1zJcuLnVMGuOCCA3ABbL0gg4xnk7rMF5CGSRpXgKjD/5Tlo8AscgijYrPZHfYSJ6plUavAAjVx1QAiAMQZLhZ3LkzDtC9lsZm2RpgaVLOf4b0PfisF0EDAocstHydSXFQbDoJT621kOABwgMZawMHCZqdZGMe9Adx80+u21M8KXT/jvU4xVNYvh2Nmbm8rLojgHhYI0ny9x+UPwYELUrtNiOPOZDT77klfwj8DlCIoROUq/4zLy7XhRIAh/uLAQVAuSINHADHEcC48PqrBmcX6/PlB+0aNLH64qz8QlMVUI+pm9SM0W1tKBacegjeK8PbxkBokAvxCNWb0Pwkw5lV2OD5PQoAywvCg0PBAUBgQcnZb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";
+const TIM = "Tim Digitalisasi Guru SMK Negeri 1 Yogyakarta";
+const MODELS = ["gemini-2.5-flash","gemini-flash-latest","gemini-2.5-flash-preview-09-2025"];
+const IMG_MODELS = ["gemini-2.5-flash-image","gemini-2.5-flash-image-preview"];
+const KEY_STORE = "ruang_cerita_guru_key";
+let MEMKEY = "";
+// Di Gemini Canvas kunci kosong dipakai (Canvas mengisinya otomatis). Di halaman mandiri, guru memasukkan kunci gratis sendiri.
+function apiKey(){ try{ return localStorage.getItem(KEY_STORE)||MEMKEY; }catch(e){ return MEMKEY; } }
+function setApiKey(k){ MEMKEY=k; try{ if(k) localStorage.setItem(KEY_STORE,k); else localStorage.removeItem(KEY_STORE); }catch(e){} }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const DETIK_OPS = [8,10]; // pilihan durasi klip; yang tersedia tergantung model & paket di Flow
+const WPS = 2.5; // perkiraan kata Indonesia yang muat per detik
+const STORE_KEY = "ruang_cerita_guru_v1";
+
+const JENJANG = ["PAUD/TK","SD kelas 1-3","SD kelas 4-6","SMP","SMA","SMK","Mahasiswa/Umum"];
+const DURASI = [
+  {v:0.5,l:"30 detik"},
+  {v:1,l:"1 menit"},
+  {v:2,l:"2 menit"},
+  {v:3,l:"3 menit"}
+];
+function sceneCount(){ return Math.max(2,Math.ceil(S.p.meta.durasi*60/(S.p.meta.detik||8))); }
+const STYLES = {
+  kartun2d:{l:"Kartun 2D",d:"Ceria, garis tegas, cocok anak-anak",
+    en:"2D cartoon illustration, bold clean outlines, bright flat colors, friendly expressive characters, children's educational video look",
+    vid:"2D cartoon animation, bold outlines, bright flat colors, smooth lively motion"},
+  anim3d:{l:"Animasi 3D",d:"Seperti film animasi 3D modern",
+    en:"3D animated film style, soft cinematic lighting, rounded stylized characters, rich textures, vibrant colors",
+    vid:"3D animated film style, soft cinematic lighting, smooth character animation"},
+  realistik:{l:"Realistik",d:"Tampak seperti film/foto sungguhan",
+    en:"photorealistic cinematic live-action look, natural lighting, shallow depth of field, realistic people, 35mm film quality",
+    vid:"photorealistic cinematic live-action footage, natural lighting, realistic motion"},
+  anime:{l:"Anime",d:"Gaya animasi Jepang, ekspresif",
+    en:"anime style, clean line art, soft cel shading, vibrant colors, expressive eyes",
+    vid:"anime style animation, clean line art, cel shading, expressive motion"},
+  flat:{l:"Vektor datar",d:"Minimalis, modern, mirip infografis",
+    en:"flat vector illustration, minimal geometric shapes, limited harmonious color palette, clean modern look",
+    vid:"flat vector motion graphics style, minimal shapes, smooth simple animation"},
+  catair:{l:"Cat air buku cerita",d:"Lembut, hangat, seperti buku dongeng",
+    en:"soft watercolor storybook illustration, gentle washes of color, paper texture, warm pastel palette",
+    vid:"watercolor storybook animation, gentle painterly motion, soft pastel tones"},
+  clay:{l:"Plastisin (claymation)",d:"Tokoh dari tanah liat, stop-motion",
+    en:"claymation stop-motion style, handmade clay characters with fingerprint texture, tabletop miniature sets, warm lighting",
+    vid:"stop-motion claymation animation, handmade clay look, slightly jerky charming motion"},
+  paper:{l:"Kolase kertas",d:"Potongan kertas berlapis",
+    en:"layered paper-cut collage style, textured craft paper, soft depth shadows, handmade look",
+    vid:"paper-cut collage animation, layered parallax movement, handmade feel"}
+};
+
+/* ================== STATE ================== */
+function newProject(){
+  return {
+    started:false,
+    meta:{mapel:"",jenjang:"SMP",topik:"",tujuan:"",durasi:1,detik:8,rasio:"16:9",catatan:""},
+    gaya:"kartun2d",
+    ideas:[], ide:{judul:"",sinopsis:""},
+    tokoh:[], scenes:[], chars:[]
+  };
+}
+const S = {step:0, p:newProject(), busy:"", err:"", toast:"", confirm:null, lastKey:"", imgs:{}, sugg:{}, simgs:{}};
+const ORDER_BAR = `<div class="pipe"><span><i>1</i>Character sheet</span><em>›</em><span><i>2</i>Gambar adegan</span><em>›</em><span><i>3</i>Video + suara di Flow</span><em>›</em><span><i>4</i>Unduh &amp; rakit</span></div>`;
+
+function store(){ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); return localStorage; }catch(e){ try{ return sessionStorage; }catch(e2){ return null; } } }
+function save(){
+  S.p._step = S.step;
+  try{ const st=store(); if(st) st.setItem(STORE_KEY, JSON.stringify(S.p)); }catch(e){}
+  saveImgs();
+}
+// Cadangan terakhir: window.name bertahan walau halaman dimuat ulang, bahkan saat penyimpanan browser diblokir.
+function saveName(){ try{ window.name = "RCG:"+JSON.stringify({p:S.p,simgs:S.simgs,imgs:S.imgs}); }catch(e){} }
+function readName(){ try{ if(String(window.name).startsWith("RCG:")) return JSON.parse(window.name.slice(4)); }catch(e){} return null; }
+function load(){
+  let ok=false;
+  try{
+    const st=store(); const t = st && st.getItem(STORE_KEY);
+    if(t){ S.p = Object.assign(newProject(), JSON.parse(t)); ok=true; }
+  }catch(e){}
+  if(!ok){ const n=readName(); if(n && n.p){ S.p = Object.assign(newProject(), n.p); if(n.simgs) S.simgs=n.simgs; if(n.imgs) S.imgs=n.imgs; ok=true; } }
+  if(ok) S.step = Math.min(5,Math.max(0,+S.p._step||0));
+}
+// Gambar disimpan di IndexedDB supaya tidak hilang jika halaman dimuat ulang (sering terjadi di HP).
+function idb(){ return new Promise((res,rej)=>{ try{ const q=indexedDB.open("rcg_db",1); q.onupgradeneeded=()=>q.result.createObjectStore("kv"); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }catch(e){ rej(e); } }); }
+async function idbSet(k,v){ try{ const d=await idb(); await new Promise((res,rej)=>{ const t=d.transaction("kv","readwrite"); t.objectStore("kv").put(v,k); t.oncomplete=res; t.onerror=()=>rej(t.error); }); }catch(e){} }
+async function idbGet(k){ try{ const d=await idb(); return await new Promise((res,rej)=>{ const r=d.transaction("kv").objectStore("kv").get(k); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }catch(e){ return undefined; } }
+let imgTimer;
+function saveImgs(){ clearTimeout(imgTimer); imgTimer=setTimeout(()=>{ idbSet("simgs",S.simgs); idbSet("imgs",S.imgs); saveName(); },400); }
+async function restoreImgs(){
+  const a = await idbGet("simgs"), b = await idbGet("imgs");
+  let ch=false;
+  if(a && !Object.keys(S.simgs).length){ S.simgs=a; ch=true; }
+  if(b && !Object.keys(S.imgs).length){ S.imgs=b; ch=true; }
+  if(ch) render(true);
+}
+
+/* ================== UTIL ================== */
+const esc = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function setPath(o,path,val){
+  const k = path.split("."); let c = o;
+  for(let i=0;i<k.length-1;i++){ c = c[k[i]]; if(c==null) return; }
+  c[k[k.length-1]] = val;
+}
+function showToast(m){
+  S.toast = m; renderOverlay();
+  clearTimeout(showToast.t);
+  showToast.t = setTimeout(()=>{S.toast="";renderOverlay();},2200);
+}
+function ask(msg,fn){ S.confirm={msg,fn}; renderOverlay(); }
+function copyText(t){
+  const done = ()=>showToast("Tersalin ✓");
+  const fb = ()=>{
+    const a=document.createElement("textarea"); a.value=t; a.style.position="fixed"; a.style.opacity="0";
+    document.body.appendChild(a); a.select();
+    try{document.execCommand("copy"); done();}catch(e){showToast("Gagal menyalin, salin manual.");}
+    a.remove();
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(done).catch(fb);
+  } else fb();
+}
+function download(name,text,mime){
+  try{
+    const b = new Blob([text],{type:(mime||"text/plain")+";charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    showToast("File diunduh");
+  }catch(e){
+    showToast("Unduh gagal, pakai tombol Salin.");
+  }
+}
+function slug(s){ return (s||"proyek").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"proyek"; }
+function wordCount(s){ return (String(s||"").trim().match(/\S+/g)||[]).length; }
+
+/* ================== GEMINI ================== */
+const SYSTEM = "Kamu adalah perancang pembelajaran dan sutradara video edukasi untuk guru di Indonesia. Materi harus akurat, sesuai jenjang, dan menarik. Jawab HANYA dengan JSON valid tanpa teks lain.";
+function parseJSON(t){
+  t = String(t||"").trim().replace(/^```(?:json)?/i,"").replace(/```$/,"").trim();
+  return JSON.parse(t);
+}
+async function postApi(models,body,method){
+  let last;
+  for(const m of models){
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:${method||"generateContent"}?key=${encodeURIComponent(apiKey())}`;
+    for(let k=0;k<3;k++){
+      let r;
+      try{ r = await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }
+      catch(e){ last=new Error("tidak ada koneksi internet"); await sleep(Math.pow(2,k)*800); continue; }
+      if(r.ok) return r.json();
+      if(r.status===404){ last=new Error("model tidak tersedia (404)"); break; }
+      if(r.status===400||r.status===401||r.status===403){
+        let msg=""; try{ msg=(await r.json()).error.message||""; }catch(e){}
+        const e=new Error("HTTP "+r.status+(msg?": "+msg.slice(0,140):""));
+        e.auth = (r.status!==400) || /api key|API_KEY/i.test(msg);
+        throw e;
+      }
+      last=new Error("HTTP "+r.status); await sleep(Math.pow(2,k)*1000);
+    }
+  }
+  throw last||new Error("gagal");
+}
+async function gemini(prompt){
+  const body = {
+    contents:[{parts:[{text:prompt}]}],
+    systemInstruction:{parts:[{text:SYSTEM}]},
+    generationConfig:{responseMimeType:"application/json",temperature:0.9}
+  };
+  const j = await postApi(MODELS,body);
+  const t = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts[0].text;
+  if(!t) throw new Error("Respons kosong");
+  return parseJSON(t);
+}
+async function run(label,fn){
+  S.busy = label; S.err = ""; render();
+  try{ await fn(); }
+  catch(e){ if(e.auth){ S.keyDlg=true; S.err="Kunci AI belum diisi atau tidak valid. Masukkan kunci gratis dari Google, lalu coba lagi."; } else S.err = "AI sedang bermasalah: "+(e.message||e)+". Coba lagi sebentar lagi."; }
+  S.busy = ""; save(); render(true); renderOverlay();
+}
+function metaText(){
+  const m = S.p.meta;
+  return `Mata pelajaran/bidang: ${m.mapel||"-"}\nJenjang: ${m.jenjang}\nTopik: ${m.topik||"-"}\nTujuan pembelajaran: ${m.tujuan||"-"}\nCatatan guru: ${m.catatan||"-"}`;
+}
+
+/* ===== Langkah 1: ide ===== */
+async function genIdeas(){
+  const prompt = `${metaText()}
+
+Buat 3 ide cerita video pembelajaran yang BERBEDA gaya (misal: petualangan, misteri kecil, dialog dua tokoh, kehidupan sehari-hari). Konsep harus dijelaskan lewat cerita, setting dan nama tokoh khas Indonesia, bahasa sesuai jenjang.
+Format JSON: {"ide":[{"judul":"","sinopsis":"2-3 kalimat","hook":"kalimat pembuka yang menarik","tokohSaran":[{"nama":"","peran":""}]}]}
+Maksimal 3 tokoh per ide.`;
+  const r = await gemini(prompt);
+  S.p.ideas = (r.ide||[]).slice(0,3);
+}
+
+/* ===== Langkah 2: storyboard ===== */
+function normScene(s){
+  s = s||{};
+  const dl = Array.isArray(s.dialog)?s.dialog:[];
+  return {
+    judul:s.judul||"", tujuan:s.tujuan||"", visual_id:s.visual_id||"",
+    setting_en:s.setting_en||"", action_en:s.action_en||"", camera_en:s.camera_en||"", sfx_en:s.sfx_en||"",
+    tokoh:Array.isArray(s.tokoh)?s.tokoh:[],
+    ekspresi_en:s.ekspresi_en||"", lighting_en:s.lighting_en||"", layar:s.layar||"", detik:+s.detik||S.p.meta.detik||8,
+    dialog:dl.map(d=>({tokoh:d.tokoh||"Narator",teks:d.teks||""})),
+    imageManual:null, videoManual:null, done:false
+  };
+}
+const SCENE_SCHEMA = `{"judul":"judul singkat adegan","tujuan":"apa yang dipahami siswa di adegan ini","visual_id":"deskripsi visual dalam bahasa Indonesia untuk guru","setting_en":"lokasi dan suasana, English","action_en":"SATU momen visual konkret, English","camera_en":"ukuran shot + SATU gerakan kamera sinematik, English, mis. medium close-up, slow dolly-in","ekspresi_en":"ekspresi wajah dan bahasa tubuh tiap tokoh selama adegan, English","lighting_en":"pencahayaan dan suasana warna, English","sfx_en":"efek suara dan musik latar, English","layar":"teks di layar (opsional)","tokoh":["nama tokoh yang tampil"],"dialog":[{"tokoh":"nama tokoh atau Narator","teks":"kalimat bahasa Indonesia"}]}`;
+const RULES_F = () => { const d=S.p.meta.detik||8; return `Aturan:
+- Setiap adegan tepat ${d} detik, satu aksi visual utama saja.
+- Total dialog per adegan MAKSIMAL ${Math.floor(d*WPS)} kata bahasa Indonesia, natural dan mudah diucapkan.
+- Field "layar" = teks pendek (maks 6 kata) yang nanti ditambahkan di editor video (judul/poin penting), kosongkan jika tidak perlu.`; };
+const RULES_REST = `
+- Alur: pembuka menarik, masalah/pertanyaan, penjelasan konsep bertahap, contoh nyata, ringkasan penutup.
+- Materi harus benar secara ilmiah/akademik, bahasa sesuai jenjang.
+- Gambar tidak boleh berisi teks/tulisan. Maksimal 3 tokoh utama; gunakan nama tokoh yang konsisten. Tokoh "Narator" boleh untuk suara latar.
+- Field berakhiran _en ditulis dalam bahasa Inggris, lainnya bahasa Indonesia.`;
+async function genStoryboard(){
+  const n = sceneCount();
+  const prompt = `${metaText()}
+Ide terpilih: ${S.p.ide.judul}\nSinopsis: ${S.p.ide.sinopsis}
+Buat storyboard ${n} adegan.
+${RULES_F()}${RULES_REST}
+Format JSON: {"tokoh":[{"nama":"","peran":""}],"scenes":[${SCENE_SCHEMA}]}`;
+  const r = await gemini(prompt);
+  S.p.scenes = (r.scenes||[]).map(normScene);
+  S.p.tokoh = r.tokoh||[];
+}
+async function regenScene(i){
+  const sc = S.p.scenes;
+  const prompt = `${metaText()}
+Ide: ${S.p.ide.judul} - ${S.p.ide.sinopsis}
+Tokoh: ${S.p.tokoh.map(t=>t.nama+" ("+t.peran+")").join(", ")}
+Adegan sebelumnya: ${sc[i-1]?sc[i-1].judul+" - "+sc[i-1].dialog.map(d=>d.teks).join(" "):"(awal)"}
+Adegan sesudahnya: ${sc[i+1]?sc[i+1].judul+" - "+sc[i+1].dialog.map(d=>d.teks).join(" "):"(akhir)"}
+Tulis ULANG adegan ke-${i+1} (saat ini: "${sc[i].judul}") dengan ide visual dan dialog yang berbeda tetapi tetap nyambung alurnya.
+${RULES_F()}${RULES_REST}
+Format JSON satu objek: ${SCENE_SCHEMA}`;
+  const r = await gemini(prompt);
+  sc[i] = normScene(r);
+}
+
+/* ===== Langkah 3: karakter ===== */
+async function genChars(){
+  const st = STYLES[S.p.gaya];
+  const list = (S.p.tokoh.length?S.p.tokoh:[{nama:"Tokoh utama",peran:""}]);
+  const prompt = `Jenjang siswa: ${S.p.meta.jenjang}. Topik: ${S.p.meta.topik}. Cerita: ${S.p.ide.judul} - ${S.p.ide.sinopsis}
+Gaya visual: ${st.en}
+Tokoh: ${list.map(t=>t.nama+" ("+t.peran+")").join(", ")}
+Untuk setiap tokoh tulis deskripsi visual TETAP (English, 30-45 kata) yang dipakai ulang di semua adegan: usia, bentuk tubuh, wajah, rambut, warna kulit, pakaian lengkap dengan warna, satu ciri khas/aksesori. Tokoh fiksi, bukan orang nyata. Cocok dengan gaya visual dan budaya Indonesia. Jika tokoh hewan/benda, jelaskan wujud dan warnanya.
+Format JSON: {"karakter":[{"nama":"","peran":"","deskripsi_en":""}]}`;
+  const r = await gemini(prompt);
+  S.p.chars = (r.karakter||[]).map(c=>({nama:c.nama||"",peran:c.peran||"",deskripsi_en:c.deskripsi_en||"",ide:""}));
+  S.imgs = {}; S.sugg = {};
+}
+async function charSuggest(i){
+  const c = S.p.chars[i], st = STYLES[S.p.gaya];
+  const prompt = `Jenjang siswa: ${S.p.meta.jenjang}. Cerita: ${S.p.ide.judul} - ${S.p.ide.sinopsis}
+Gaya visual: ${st.en}
+Tokoh: ${c.nama} (${c.peran}). Deskripsi saat ini: ${c.deskripsi_en||"(belum ada)"}
+Beri 4 saran tampilan yang BERBEDA untuk tokoh ini (usia, pakaian, warna, ciri khas), cocok untuk budaya Indonesia dan gaya visual. Tokoh fiksi.
+Format JSON: {"saran":[{"label":"ringkasan 5-8 kata bahasa Indonesia","deskripsi_en":"30-45 kata English: usia, tubuh, wajah, rambut, kulit, pakaian+warna, satu ciri khas"}]}`;
+  const r = await gemini(prompt);
+  S.sugg[i] = (r.saran||[]).slice(0,4);
+}
+async function charFromIdea(i){
+  const c = S.p.chars[i], st = STYLES[S.p.gaya];
+  const prompt = `Ubah ide tampilan tokoh berikut menjadi deskripsi visual tetap (English, 30-45 kata: usia, tubuh, wajah, rambut, kulit, pakaian+warna, ciri khas). Cocok dengan gaya: ${st.en}. Tokoh fiksi.
+Tokoh: ${c.nama} (${c.peran})
+Ide guru: ${c.ide}
+Format JSON: {"deskripsi_en":""}`;
+  const r = await gemini(prompt);
+  if(r.deskripsi_en) c.deskripsi_en = r.deskripsi_en;
+}
+async function imagenGen(prompt,ratio){
+  try{
+    const j = await postApi(["imagen-4.0-generate-001"],{instances:[{prompt}],parameters:{sampleCount:1,aspectRatio:ratio}},"predict");
+    const b = j.predictions && j.predictions[0] && j.predictions[0].bytesBase64Encoded;
+    if(!b) throw new Error("gambar kosong");
+    return "data:image/png;base64,"+b;
+  }catch(e){
+    if(e.auth) throw e;
+    throw new Error("pembuat gambar belum tersedia ("+(e.message||"")+"). Buat gambarnya langsung di Flow, lalu unggah di sini");
+  }
+}
+async function genImage(prompt,ratio,refs){
+  refs = (refs||[]).filter(Boolean).slice(0,3);
+  const parts = [];
+  refs.forEach(r=>{ const m=/^data:(.+?);base64,(.+)$/.exec(r); if(m) parts.push({inlineData:{mimeType:m[1],data:m[2]}}); });
+  parts.push({text:(parts.length?"Use the attached reference image(s) to keep every character exactly the same: face, hair, skin tone, clothing and colors. ":"")+prompt+" Output image aspect ratio "+ratio+"."});
+  const body = {contents:[{parts}],generationConfig:{responseModalities:["IMAGE"]}};
+  try{
+    const j = await postApi(IMG_MODELS,body);
+    const ps = (j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[];
+    const im = ps.find(x=>x.inlineData||x.inline_data);
+    const d = im && (im.inlineData||im.inline_data);
+    if(!d || !d.data) throw new Error("gambar kosong");
+    return "data:"+(d.mimeType||d.mime_type||"image/png")+";base64,"+d.data;
+  }catch(e){
+    if(e.auth) throw e;
+    return imagenGen(prompt,ratio); // cadangan: tanpa referensi
+  }
+}
+async function charImage(i){ S.imgs[i] = await genImage(sheetPrompt(S.p.chars[i]),"16:9",[]); }
+async function sceneImage(i){
+  const sc = S.p.scenes[i];
+  const refs = (sc.tokoh||[]).map(n=>S.p.chars.findIndex(c=>c.nama.trim().toLowerCase()===String(n).trim().toLowerCase())).filter(k=>k>=0).map(k=>S.imgs[k]);
+  S.simgs[i] = await genImage(imagePrompt(sc), S.p.meta.rasio==="9:16"?"9:16":"16:9", refs);
+}
+async function allImages(){
+  const todo = S.p.scenes.map((_,i)=>i).filter(i=>!S.simgs[i]);
+  for(let k=0;k<todo.length;k++){
+    S.busy = "Semua gambar "+(k+1)+"/"+todo.length; render();
+    await sceneImage(todo[k]);
+  }
+}
+function sheetPrompt(c){
+  const st = STYLES[S.p.gaya];
+  return `Character reference sheet of ${c.nama}: ${c.deskripsi_en}. ${st.en}. Show the same character in front view, three-quarter view, side view, and a close-up row of three expressions (happy, curious, surprised), full body, evenly spaced on a plain light gray background, identical proportions and colors in every pose. No text, no labels, no watermark.`;
+}
+function findChar(n){
+  const k = String(n||"").trim().toLowerCase();
+  return S.p.chars.find(c=>c.nama.trim().toLowerCase()===k);
+}
+
+/* ===== Langkah 4: prompt adegan ===== */
+function isNarator(n){ return /narator|narrator|suara latar|voice/i.test(n||""); }
+function imagePrompt(sc){
+  if(sc.imageManual) return sc.imageManual;
+  const st = STYLES[S.p.gaya];
+  const ar = S.p.meta.rasio==="9:16" ? "vertical 9:16 composition" : "wide 16:9 cinematic composition";
+  const cs = (sc.tokoh||[]).filter(n=>!isNarator(n)).map(n=>{const c=findChar(n);return c?`${c.nama}: ${c.deskripsi_en}`:n;}).join("; ");
+  return `${st.en}. ${ar}. Setting: ${sc.setting_en}${sc.lighting_en?", "+sc.lighting_en:""}. ${cs?"Characters (keep identical to the attached character reference images): "+cs+". ":""}Moment: ${sc.action_en}.${sc.ekspresi_en?" Expressions: "+sc.ekspresi_en+".":""} Framing: ${sc.camera_en}. No text, no captions, no watermark, no logos.`;
+}
+function videoPrompt(sc){
+  if(sc.videoManual) return sc.videoManual;
+  const st = STYLES[S.p.gaya], d = sc.detik||S.p.meta.detik||8;
+  const dl = (sc.dialog||[]).filter(x=>x.teks.trim()).map(x=> isNarator(x.tokoh)
+    ? `Narrator (off-screen voice-over, Indonesian): "${x.teks}"`
+    : `${x.tokoh} (Indonesian): "${x.teks}"`).join("\n");
+  const cs = (sc.tokoh||[]).filter(n=>!isNarator(n)).map(n=>{const c=findChar(n);return c?`${c.nama}: ${c.deskripsi_en}`:n;}).join("; ");
+  return [
+    `Cinematic ${d}-second shot, continuing from the attached starting frame.`,
+    `STYLE: ${st.vid}.`,
+    `SCENE: ${sc.setting_en}${sc.lighting_en?". Lighting: "+sc.lighting_en:""}.`,
+    cs?`CHARACTERS (identical to the starting frame): ${cs}.`:"",
+    `ACTION: ${sc.action_en}.`,
+    sc.ekspresi_en?`EXPRESSIONS & BODY LANGUAGE: ${sc.ekspresi_en}.`:"",
+    `CAMERA: ${sc.camera_en}.`,
+    dl?`DIALOGUE (speak clearly, natural lip-sync, in Indonesian):\n${dl}`:"",
+    `AUDIO: ${sc.sfx_en||"soft gentle background music"}.`,
+    `Keep characters, setting and style consistent. No subtitles, no on-screen text, no watermark.`
+  ].filter(Boolean).join("\n");
+}
+function sceneWords(sc){ return (sc.dialog||[]).reduce((a,d)=>a+wordCount(d.teks),0); }
+function warnText(sc){
+  const w = sceneWords(sc), d = sc.detik||S.p.meta.detik||8, mx = Math.floor(d*WPS);
+  return w>mx ? `Dialog ${w} kata: kemungkinan lebih dari ${d} detik (maks ±${mx} kata). Persingkat atau pecah adegan.` : (w? `Dialog ${w} kata (aman untuk ${d} detik).`:"");
+}
+
+/* ===== Ekspor ===== */
+function buildPrompts(){
+  const p = S.p, st = STYLES[p.gaya];
+  let o = `RUANG CERITA GURU - PAKET PROMPT\n${"=".repeat(40)}\nJudul   : ${p.ide.judul}\nMapel   : ${p.meta.mapel}\nJenjang : ${p.meta.jenjang}\nTopik   : ${p.meta.topik}\nGaya    : ${st.l}\nRasio   : ${p.meta.rasio}\n\n`;
+  o += `LANGKAH 1 - CHARACTER SHEET (generate dulu di Flow, simpan gambarnya)\n${"-".repeat(40)}\n`;
+  p.chars.forEach(c=>{ o += `[${c.nama}]\n${sheetPrompt(c)}\n\n`; });
+  o += `LANGKAH 2 - PER ADEGAN\n${"-".repeat(40)}\n`;
+  p.scenes.forEach((sc,i)=>{
+    o += `ADEGAN ${i+1}: ${sc.judul} (${sc.detik||8} detik)\nTokoh: ${(sc.tokoh||[]).join(", ")||"-"}\n${sc.layar?"Teks di layar (tambahkan di editor): "+sc.layar+"\n":""}`;
+    o += `PROMPT GAMBAR:\n${imagePrompt(sc)}\n\nPROMPT VIDEO:\n${videoPrompt(sc)}\n\n`;
+  });
+  return o;
+}
+function buildScript(){
+  const p = S.p;
+  let o = `NASKAH - ${p.ide.judul}\n${"=".repeat(40)}\n${p.meta.mapel} | ${p.meta.jenjang} | ${p.meta.topik}\n\n`;
+  p.scenes.forEach((sc,i)=>{
+    o += `Adegan ${i+1} - ${sc.judul} (${sc.detik||8} detik)\nTujuan: ${sc.tujuan}\nVisual: ${sc.visual_id}\n${sc.layar?"Teks di layar (editor): "+sc.layar+"\n":""}`;
+    (sc.dialog||[]).forEach(d=>{ o += `  ${d.tokoh}: ${d.teks}\n`; });
+    o += "\n";
+  });
+  return o;
+}
+
+/* ================== RENDER ================== */
+const STEPS = ["Ide","Storyboard","Karakter","Prompt","Unduh","Panduan"];
+function isDone(i){
+  const p=S.p;
+  return [!!p.ide.judul, p.scenes.length>0, p.chars.length>0, p.scenes.length>0&&p.chars.length>0, false, false][i];
+}
+const btn = (act,label,cls="",extra="") => `<button class="btn ${cls}" data-act="${act}" ${S.busy?"disabled":""} ${extra}>${label}</button>`;
+const busyBtn = (act,label,busyLabel,cls="",dis=false) => S.busy===busyLabel
+  ? `<button class="btn ${cls}" disabled><span class="spin"></span>${esc(busyLabel)}</button>`
+  : `<button class="btn ${cls}" data-act="${act}" ${(S.busy||dis)?"disabled":""}>${label}</button>`;
+const bind = (path,val,live) => `data-b="${path}" value="${esc(val)}"`;
+
+let lastStep=-1;
+function render(keep){
+  const __y = window.scrollY;
+  const app = document.getElementById("app");
+  if(!S.p.started){ app.innerHTML = renderIntro(); return; }
+  const head = `<header class="top"><div class="logo"><div class="mark">🎬</div><div>Ruang Cerita Guru<small>Video pembelajaran dengan AI, gratis untuk guru</small></div></div>
+    <div class="actions" style="margin:0">${btn("exportProject","Simpan proyek","alt sm")}${btn("importProject","Buka proyek","alt sm")}${btn("keyOpen","🔑 Kunci AI","alt sm")}${btn("newProject","Proyek baru","warn sm")}</div></header>`;
+  const stepper = `<nav class="stepper">${STEPS.map((s,i)=>`<button data-act="goto" data-i="${i}" class="${S.step===i?"on":""} ${isDone(i)?"done":""}"><i>${isDone(i)&&S.step!==i?"✓":(i<5?i+1:"?")}</i>${s}</button>`).join("")}</nav>`;
+  const err = S.err?`<div class="err">${esc(S.err)}</div>`:"";
+  const body = [stepIde,stepStory,stepChar,stepPrompt,stepExport,stepGuide][S.step]();
+  app.innerHTML = head + stepper + err + body + footer();
+  if(S.step!==lastStep && !keep){ window.scrollTo({top:0}); } else { window.scrollTo(0,__y); }
+  lastStep=S.step;
+}
+function footer(simple){
+  if(simple) return `<footer>Periksa kembali kebenaran materi sebelum dipakai mengajar.<div style="font-size:11px;margin-top:8px;opacity:.8">Versi 1.3</div></footer>`;
+  return `<footer><div class="credit"><img src="${LOGO}" alt="Logo SMK Negeri 1 Yogyakarta"><div>Dibuat oleh ${TIM}<small>Gratis untuk guru Indonesia</small></div></div>Periksa kembali kebenaran materi sebelum dipakai mengajar.<div style="font-size:11px;margin-top:8px;opacity:.8">Desain oleh Dina Ratnasari Heryani, S.E. · Versi 1.3</div></footer>`;
+}
+function renderIntro(){
+  return `<div class="card hero" style="margin-top:16px">
+    <span class="badge">GRATIS UNTUK GURU INDONESIA</span>
+    <h1>Ruang Cerita Guru</h1>
+    <p>Ubah materi pelajaran menjadi video cerita animasi atau realistik. Tanpa keahlian desain, tanpa biaya.</p>
+    <div class="tiles">
+      <div><i>💡</i><b>Ide cerita</b>Dari topik dan tujuan belajar</div>
+      <div><i>🎞️</i><b>Storyboard</b>Adegan, dialog, gerak kamera</div>
+      <div><i>🧑‍🎨</i><b>Karakter konsisten</b>Wajah sama di tiap adegan</div>
+      <div><i>🚀</i><b>Siap ke Flow</b>Unduh gambar, tempel prompt</div>
+    </div>
+    <div class="by"><img src="${LOGO}" alt="Logo SMK Negeri 1 Yogyakarta"><div><small>Dikembangkan oleh</small>${TIM}<small style="margin-top:2px">Desain oleh Dina Ratnasari Heryani, S.E.</small></div></div>
+    ${(window.top===window.self && !apiKey())?`<p style="margin:16px auto 0;max-width:460px;font-size:13px;opacity:.92">Butuh kunci AI gratis dari Google (cukup sekali, hanya disimpan di browser Anda). <a href="#" data-act="keyOpen" style="color:#fff;font-weight:700">Isi kunci AI</a></p>`:""}
+    <div class="actions" style="justify-content:center;margin-top:22px">
+      <button class="btn" data-act="start">Mulai membuat video</button>
+      <button class="btn alt" data-act="importProject">Buka proyek tersimpan</button>
+    </div>
+  </div>${footer(true)}`;
+}
+
+function stepIde(){
+  const m = S.p.meta, p = S.p;
+  return `<div class="card"><h2>1. Ide cerita</h2><p class="sub">Isi data pelajaran. AI akan menawarkan 3 ide cerita, atau tulis ide sendiri.</p>
+    <div class="row"><div><label>Mata pelajaran / bidang</label><input type="text" ${bind("meta.mapel",m.mapel)} placeholder="mis. IPA, Matematika, PAI"></div>
+    <div><label>Jenjang</label><select data-b="meta.jenjang">${JENJANG.map(j=>`<option ${j===m.jenjang?"selected":""}>${j}</option>`).join("")}</select></div></div>
+    <label>Topik</label><input type="text" ${bind("meta.topik",m.topik)} placeholder="mis. Siklus air, Pecahan, Adab bertamu">
+    <label>Tujuan pembelajaran</label><textarea data-b="meta.tujuan" placeholder="mis. Siswa dapat menjelaskan tahapan siklus air dan pentingnya menghemat air">${esc(m.tujuan)}</textarea>
+    <div class="row"><div><label>Durasi video</label><select data-b="meta.durasi" data-num="1">${DURASI.map(d=>`<option value="${d.v}" ${d.v==m.durasi?"selected":""}>${d.l}</option>`).join("")}</select></div>
+    <div><label>Rasio video</label><select data-b="meta.rasio"><option value="16:9" ${m.rasio==="16:9"?"selected":""}>16:9 (layar kelas, YouTube)</option><option value="9:16" ${m.rasio==="9:16"?"selected":""}>9:16 (WhatsApp, TikTok, Reels)</option></select></div></div>
+    <label>Catatan tambahan (opsional)</label><input type="text" ${bind("meta.catatan",m.catatan)} placeholder="mis. latar desa, tokoh kucing, humor ringan">
+    <label>Durasi tiap klip adegan</label><select data-b="meta.detik" data-num="1">${DETIK_OPS.map(d=>`<option value="${d}" ${d==m.detik?"selected":""}>${d} detik</option>`).join("")}</select>
+    <div class="note">Pilih sesuai durasi yang tersedia di Flow pada model dan paket Anda (8 detik, atau 10 detik bila model Anda mendukung). Hasil: ±${sceneCount()} adegan. Makin banyak adegan, makin banyak kuota Flow terpakai.</div>
+    <div class="actions">${busyBtn("ideas","Buat 3 ide cerita","Membuat ide...","",!m.topik.trim())}</div>
+    ${p.ideas.length?`<div class="ideas">${p.ideas.map((x,i)=>`<div class="idea"><b>${esc(x.judul)}</b><div>${esc(x.sinopsis)}</div><div class="small" style="margin-top:4px"><i>Pembuka: ${esc(x.hook||"")}</i></div><div class="chips">${(x.tokohSaran||[]).map(t=>`<span>${esc(t.nama)} · ${esc(t.peran)}</span>`).join("")}</div><div class="actions" style="margin-top:8px">${btn("pickIdea","Pilih ide ini","sm",`data-i="${i}"`)}</div></div>`).join("")}</div>`:""}
+  </div>
+  <div class="card"><h3>Ide terpilih</h3><p class="sub">Bisa diedit atau ditulis sendiri.</p>
+    <label>Judul video</label><input type="text" ${bind("ide.judul",p.ide.judul)}>
+    <label>Sinopsis</label><textarea data-b="ide.sinopsis">${esc(p.ide.sinopsis)}</textarea>
+    <div class="actions"><span class="spacer"></span>${btn("goto","Lanjut: Storyboard","",`data-i="1"`)}</div></div>`;
+}
+
+function sceneCard(sc,i){
+  const n = S.p.scenes.length;
+  return `<div class="scene"><div class="hd"><div class="no">${i+1}</div><input type="text" data-b="scenes.${i}.judul" value="${esc(sc.judul)}" placeholder="Judul adegan" style="font-weight:600">
+    ${btn("up","↑","alt sm",`data-i="${i}" ${i===0?"disabled":""}`)}${btn("down","↓","alt sm",`data-i="${i}" ${i===n-1?"disabled":""}`)}</div>
+    <div class="row"><div><label>Tujuan adegan</label><input type="text" data-b="scenes.${i}.tujuan" value="${esc(sc.tujuan)}"></div>
+    <div><label>Durasi klip</label><select data-b="scenes.${i}.detik" data-num="1">${DETIK_OPS.map(d=>`<option value="${d}" ${d==sc.detik?"selected":""}>${d} detik</option>`).join("")}</select></div></div>
+    <label>Teks di layar (ditambahkan nanti di editor video, opsional)</label><input type="text" data-b="scenes.${i}.layar" value="${esc(sc.layar||"")}" placeholder="mis. STOP! THINK! THEN BUY!">
+    <label>Gambaran visual (untuk guru)</label><textarea data-b="scenes.${i}.visual_id">${esc(sc.visual_id)}</textarea>
+    <label>Dialog / narasi (maks ±20 kata)</label>
+    ${(sc.dialog||[]).map((d,j)=>`<div class="dl"><input type="text" data-b="scenes.${i}.dialog.${j}.tokoh" value="${esc(d.tokoh)}" placeholder="Tokoh"><input type="text" data-b="scenes.${i}.dialog.${j}.teks" value="${esc(d.teks)}" placeholder="Ucapan"><button class="btn warn sm" data-act="delLine" data-i="${i}" data-j="${j}">✕</button></div>`).join("")}
+    <div class="warnline" id="warn-${i}">${esc(warnText(sc))}</div>
+    <div class="actions" style="margin-top:4px">${btn("addLine","+ Baris dialog","alt sm",`data-i="${i}"`)}</div>
+    <details><summary>Detail teknis untuk prompt (English)</summary>
+      <label>Tokoh yang tampil (pisahkan koma)</label><input type="text" data-b="scenes.${i}.tokoh" data-list="1" value="${esc((sc.tokoh||[]).join(", "))}">
+      <label>Lokasi &amp; suasana</label><textarea data-b="scenes.${i}.setting_en" style="min-height:56px">${esc(sc.setting_en)}</textarea>
+      <label>Aksi / momen visual</label><textarea data-b="scenes.${i}.action_en" style="min-height:56px">${esc(sc.action_en)}</textarea>
+      <label>Ekspresi &amp; bahasa tubuh</label><input type="text" data-b="scenes.${i}.ekspresi_en" value="${esc(sc.ekspresi_en||"")}"><label>Pencahayaan</label><input type="text" data-b="scenes.${i}.lighting_en" value="${esc(sc.lighting_en||"")}">
+      <div class="row"><div><label>Kamera (shot + gerakan)</label><input type="text" data-b="scenes.${i}.camera_en" value="${esc(sc.camera_en)}"></div><div><label>Efek suara &amp; musik</label><input type="text" data-b="scenes.${i}.sfx_en" value="${esc(sc.sfx_en)}"></div></div>
+    </details>
+    <div class="actions">${S.busy===("Menulis ulang "+(i+1))?`<button class="btn alt sm" disabled><span class="spin" style="border-top-color:#0f766e"></span>Menulis ulang...</button>`:btn("regen","Tulis ulang dengan AI","alt sm",`data-i="${i}"`)}<span class="spacer"></span>${btn("delScene","Hapus adegan","warn sm",`data-i="${i}"`)}</div></div>`;
+}
+function stepStory(){
+  const p = S.p, n=sceneCount();
+  return `<div class="card"><h2>2. Storyboard</h2><p class="sub">Urutan adegan, dialog, dan arahan visual. Semua bisa Anda ubah.</p>
+    ${!p.ide.judul?`<div class="note">Isi dulu ide cerita di langkah 1.</div>`:""}
+    <div class="actions">${busyBtn("story",p.scenes.length?"Buat ulang semua adegan":`Buat storyboard (${n} adegan)`,"Menyusun storyboard...","",!p.ide.judul)}</div>
+    ${p.scenes.length?`<div class="okbox">${p.scenes.length} adegan, total ±${p.scenes.reduce((a,s)=>a+(s.detik||8),0)} detik.</div>`:""}
+    ${p.scenes.map(sceneCard).join("")}
+    ${p.scenes.length?`<div class="actions">${btn("addScene","+ Tambah adegan","alt")}<span class="spacer"></span>${btn("goto","Lanjut: Karakter","",`data-i="2"`)}</div>`:""}
+  </div>`;
+}
+
+function stepChar(){
+  const p = S.p;
+  return `<div class="card"><h2>3. Karakter &amp; gaya visual</h2><p class="sub">Pilih gaya, lalu buat deskripsi tokoh. Deskripsi yang sama dipakai di setiap adegan agar wajah tidak berubah.</p>${ORDER_BAR}
+    <label>Gaya visual</label>
+    <div class="styles">${Object.keys(STYLES).map(k=>`<label class="${p.gaya===k?"on":""}"><input type="radio" name="gaya" data-b="gaya" data-rerender="1" value="${k}" ${p.gaya===k?"checked":""}><b>${STYLES[k].l}</b><span>${STYLES[k].d}</span></label>`).join("")}</div>
+    <div class="actions">${busyBtn("chars",p.chars.length?"Buat ulang karakter":"Buat karakter dengan AI","Merancang karakter...","",!p.scenes.length)}</div>
+    ${!p.scenes.length?`<div class="note">Buat storyboard dulu agar AI tahu siapa saja tokohnya.</div>`:""}
+    ${p.chars.map((c,i)=>`<div class="scene"><div class="hd"><div class="no">${i+1}</div><input type="text" data-b="chars.${i}.nama" data-rerender="1" value="${esc(c.nama)}" style="font-weight:600" placeholder="Nama"></div>
+      <label>Peran</label><input type="text" data-b="chars.${i}.peran" value="${esc(c.peran)}">
+      <label>Deskripsi visual tetap (English)</label><textarea data-b="chars.${i}.deskripsi_en" data-sheet="${i}">${esc(c.deskripsi_en)}</textarea>
+      <label>Ide tampilan dengan kata sendiri (opsional)</label><input type="text" data-b="chars.${i}.ide" value="${esc(c.ide||"")}" placeholder="mis. anak laki-laki berkacamata, suka memakai topi caping">
+      <div class="actions" style="margin-top:8px">
+        ${S.busy==="Membuat deskripsi "+i?`<button class="btn alt sm" disabled>Memproses...</button>`:btn("fromIdea","Jadikan deskripsi","alt sm",`data-i="${i}" ${(c.ide||"").trim()?"":"disabled"}`)}
+        ${S.busy==="Membuat saran "+i?`<button class="btn alt sm" disabled>Memproses...</button>`:btn("suggest","💡 Beri 4 saran tampilan","alt sm",`data-i="${i}"`)}</div>
+      ${(S.sugg[i]||[]).map((x,k)=>`<div class="idea" style="margin-top:8px"><b>${esc(x.label)}</b><div class="small">${esc(x.deskripsi_en)}</div><div class="actions" style="margin-top:6px">${btn("useSugg","Pakai saran ini","sm",`data-i="${i}" data-k="${k}"`)}</div></div>`).join("")}
+      <div class="pbox" style="margin-top:12px"><span class="tag">① PROMPT CHARACTER SHEET</span><textarea readonly id="sheet-${i}">${esc(sheetPrompt(c))}</textarea></div>
+      <div class="actions" style="margin-top:6px">${btn("copyEl","Salin prompt sheet","sm",`data-el="sheet-${i}"`)}
+        ${S.busy==="Membuat gambar "+i?`<button class="btn alt sm" disabled><span class="spin" style="border-top-color:#0f766e"></span>Menggambar...</button>`:btn("charImg","🎨 Buat gambar character sheet (AI)","alt sm",`data-i="${i}" ${c.deskripsi_en?"":"disabled"}`)}
+        ${btn("upSheet","⬆ Unggah sheet dari Flow","alt sm",`data-i="${i}"`)}
+        <span class="spacer"></span>${btn("delChar","Hapus","warn sm",`data-i="${i}"`)}</div>
+      ${S.imgs[i]?`<div style="margin-top:10px"><img src="${S.imgs[i]}" alt="Contoh ${esc(c.nama)}" style="width:100%;border-radius:12px;border:1px solid var(--line)"><div class="note">Gambar ini otomatis dipakai sebagai referensi saat membuat gambar adegan, supaya wajah tokoh konsisten. Bisa juga diganti dengan sheet buatan Flow lewat tombol unggah.</div><div class="actions">${btn("dlImg","Unduh gambar contoh","alt sm",`data-i="${i}"`)}</div></div>`:""}
+      </div>`).join("")}
+    ${p.chars.length?`<div class="actions">${btn("addChar","+ Tambah karakter","alt")}<span class="spacer"></span>${btn("goto","Lanjut: Prompt adegan","",`data-i="3"`)}</div>`:""}
+  </div>`;
+}
+
+function stepPrompt(){
+  const p = S.p;
+  if(!p.scenes.length) return `<div class="card"><h2>4. Prompt adegan</h2><div class="note">Buat storyboard dan karakter dulu.</div></div>`;
+  const doneN = p.scenes.filter(s=>s.done).length;
+  return `<div class="card"><h2>4. Prompt per adegan</h2><p class="sub">Salin prompt ke Google Flow satu per satu. Centang adegan yang sudah selesai dibuat.</p>
+    ${!p.chars.length?`<div class="note">Karakter belum dibuat. Prompt tetap jalan, tetapi tokoh bisa berubah-ubah antar adegan.</div>`:""}
+    ${ORDER_BAR}
+    <h3 style="margin-top:14px"><span class="tag">TAHAP ①</span>Character sheet (kerjakan paling awal)</h3>
+    ${p.chars.length?p.chars.map((c,i)=>`<div class="pbox"><b style="font-size:14px">${esc(c.nama)}</b><textarea readonly id="sheetp-${i}">${esc(sheetPrompt(c))}</textarea><div class="actions" style="margin-top:6px">${btn("copyEl","Salin","sm",`data-el="sheetp-${i}"`)}</div></div>`).join(""):`<div class="note">Belum ada karakter. Buat di langkah 3.</div>`}
+    <h3 style="margin-top:18px"><span class="tag">TAHAP ②</span><span class="tag v">③</span>Gambar lalu video, adegan demi adegan</h3>
+    <div class="okbox">Progres di Flow: <b>${doneN}/${p.scenes.length}</b> adegan selesai.</div>
+    ${p.chars.some((c,i)=>S.imgs[i])?"":`<div class="note">Belum ada gambar character sheet. Buat atau unggah dulu di langkah 3 agar tokoh di semua gambar adegan konsisten.</div>`}
+    <div class="actions">${S.busy.startsWith("Semua gambar")?`<button class="btn" disabled><span class="spin"></span>${esc(S.busy)}</button>`:btn("allImg","🎨 Buat semua gambar adegan",""," ")}${btn("copyAll","Salin semua prompt video","alt sm",`data-k="vid"`)}</div>
+    ${p.scenes.map((sc,i)=>`<div class="scene"><div class="hd"><div class="no">${i+1}</div><b style="flex:1">${esc(sc.judul)}</b><label class="chk"><input type="checkbox" data-done="${i}" ${sc.done?"checked":""}>Selesai</label></div>
+      <div class="chips">${(sc.tokoh||[]).map(t=>`<span>${esc(t)}</span>`).join("")}<span>${sc.detik||8} detik</span></div>
+      <div class="pbox"><span class="tag">GAMBAR ADEGAN</span>
+        ${S.simgs[i]?`<img src="${S.simgs[i]}" alt="Adegan ${i+1}" style="width:100%;max-width:${p.meta.rasio==="9:16"?"300px":"100%"};display:block;margin:8px 0;border-radius:12px;border:1px solid var(--line)">`:`<div class="note" style="margin:8px 0">Belum ada gambar. Buat contoh dengan AI, atau unggah gambar hasil Flow supaya tersimpan berpasangan dengan promptnya.</div>`}
+        <div class="actions" style="margin-top:4px">
+          ${S.busy==="Gambar adegan "+i?`<button class="btn alt sm" disabled><span class="spin" style="border-top-color:#0f766e"></span>Menggambar...</button>`:btn("sceneImg","🎨 Buat gambar (AI)","alt sm",`data-i="${i}"`)}
+          ${btn("upImg","⬆ Unggah gambar dari Flow","alt sm",`data-i="${i}"`)}
+          ${S.simgs[i]?btn("dlSceneImg","⬇ Unduh gambar","sm",`data-i="${i}"`):""}
+        </div>
+        <details><summary>Prompt gambar (untuk membuat gambar di Flow)</summary>
+          <textarea id="img-${i}" data-b="scenes.${i}.imageManual" style="margin-top:8px">${esc(imagePrompt(sc))}</textarea>
+          <div class="actions" style="margin-top:6px">${btn("copyEl","Salin","sm",`data-el="img-${i}"`)}${sc.imageManual?btn("resetP","Kembalikan otomatis","alt sm",`data-i="${i}" data-k="imageManual"`):""}</div>
+        </details>
+      </div>
+      <div class="pbox" style="margin-top:12px"><span class="tag v">PROMPT VIDEO SINEMATIK (tempel di Omni bersama gambar di atas)</span><textarea id="vid-${i}" data-b="scenes.${i}.videoManual" style="min-height:230px">${esc(videoPrompt(sc))}</textarea></div>
+      <div class="actions" style="margin-top:6px">${btn("copyEl","Salin prompt video","sm",`data-el="vid-${i}"`)}${sc.videoManual?btn("resetP","Kembalikan otomatis","alt sm",`data-i="${i}" data-k="videoManual"`):""}</div>
+      ${sc.layar?`<div class="note" style="margin:6px 0">Teks di layar (tambahkan di editor): <b>${esc(sc.layar)}</b></div>`:""}
+      <div class="warnline">${esc(warnText(sc))}</div></div>`).join("")}
+    <div class="actions"><span class="spacer"></span>${btn("goto","Lanjut: Unduh","",`data-i="4"`)}</div>
+  </div>`;
+}
+
+function stepExport(){
+  const p = S.p;
+  return `<div class="card"><h2>5. Unduh &amp; rakit video</h2><p class="sub">Dua file cukup: kartu adegan untuk dipakai di Omni, dan file proyek untuk dibuka lagi nanti.</p>
+    <div class="actions" style="flex-direction:column;align-items:stretch">
+      ${btn("dlCards","Unduh kartu adegan (gambar + prompt tiap adegan, .html)")}
+      ${btn("exportProject","Simpan proyek (.json), bisa dibuka lagi nanti","alt")}
+    </div>
+    <h3 style="margin-top:20px">Setelah semua klip jadi di Flow</h3>
+    <div class="flow"><ol>
+      <li>Unduh tiap klip video dari Flow dan beri nama berurutan: 01, 02, 03, dan seterusnya.</li>
+      <li>Susun berurutan di CapCut, Canva, atau editor video lain.</li>
+      <li>Tambahkan musik latar lembut, judul pembuka, dan kredit. Bila suara kurang jelas, rekam ulang dari dialog yang tertulis di kartu adegan.</li>
+      <li>Periksa kebenaran materi sekali lagi sebelum dibagikan ke murid.</li>
+    </ol></div>
+    <div class="actions"><span class="spacer"></span>${btn("goto","Lihat Panduan Flow","alt",`data-i="5"`)}</div></div>`;
+}
+
+function stepGuide(){
+  return `<div class="card flow"><h2>Cara pakai Google Flow</h2><p class="sub">Tampilan Flow bisa berubah dari waktu ke waktu. Nama menu di bawah mungkin sedikit berbeda.</p>
+    ${ORDER_BAR}
+    <h3>A. Persiapan</h3><ol>
+      <li>Cari <b>Google Flow</b> (Google Labs) di browser, lalu masuk dengan akun Google.</li>
+      <li>Buat <b>proyek baru</b> dan beri nama sesuai judul video. Satu proyek untuk satu video.</li>
+      <li>Kuota gratis terbatas per hari atau bulan. Kerjakan beberapa adegan per hari bila perlu. Proyek tetap tersimpan di app ini.</li>
+    </ol>
+    <h3>B. Buat karakter</h3><ol>
+      <li>Di app ini buka langkah 4 atau 5, salin <b>prompt character sheet</b> tiap tokoh.</li>
+      <li>Di Flow, tempel prompt ke pembuat gambar, atur rasio sesuai pilihan Anda, lalu generate.</li>
+      <li>Pilih hasil terbaik. Pastikan wajah, rambut, dan pakaian sudah sesuai. Ulangi bila belum cocok.</li>
+    </ol>
+    <h3>C. Buat gambar tiap adegan</h3><ol>
+      <li>Salin <b>prompt gambar</b> adegan 1.</li>
+      <li>Di Flow, tambahkan gambar character sheet sebagai <b>gambar referensi</b> (fitur bahan/ingredients), lalu tempel prompt dan generate.</li>
+      <li>Pilih hasil yang paling mirip karakter. Ulangi untuk adegan berikutnya.</li>
+    </ol>
+    <h3>D. Jadikan video</h3><ol>
+      <li>Pilih gambar adegan sebagai <b>frame awal</b> (image-to-video).</li>
+      <li>Tempel <b>prompt video + suara</b> dari app ini, lalu generate. Dialog dalam tanda kutip akan diucapkan tokoh.</li>
+      <li>Putar hasilnya. Periksa gerak, wajah, dan suara. Bila bermasalah, perpendek dialog atau generate ulang.</li>
+      <li>Unduh klip, lalu centang adegan itu di langkah 4 app ini.</li>
+    </ol>
+    <h3>Tips agar hasil bagus</h3><ul>
+      <li>Selalu pakai gambar character sheet sebagai referensi supaya tokoh konsisten.</li>
+      <li>Jangan minta tulisan di dalam gambar. Teks sering rusak. Tambahkan "teks di layar" (kolom di storyboard) di editor video seperti CapCut atau Canva.</li>
+      <li>Atur durasi klip di Flow sama dengan durasi adegan di app ini.</li>
+      <li>Dialog bahasa Indonesia bisa kurang pas pengucapannya. Bila perlu, hapus dialog dari prompt video dan rekam suara sendiri dari naskah.</li>
+      <li>Satu adegan, satu aksi. Prompt sederhana biasanya lebih stabil.</li>
+    </ul></div>`;
+}
+
+function renderOverlay(){
+  const old = document.getElementById("keyInput"); const oldV = old?old.value:"";
+  let h = "";
+  if(S.toast) h += `<div class="toast">${esc(S.toast)}</div>`;
+  if(S.confirm) h += `<div class="modal"><div class="box"><p style="margin-top:0">${esc(S.confirm.msg)}</p><div class="actions" style="justify-content:flex-end"><button class="btn alt" data-act="cNo">Batal</button><button class="btn" data-act="cYes">Ya, lanjut</button></div></div></div>`;
+  if(S.keyDlg) h += `<div class="modal"><div class="box"><h3 style="margin:0 0 6px">Kunci AI (gratis)</h3>
+    <p class="small" style="margin:0 0 8px">Jika dibuka lewat Gemini Canvas, kunci tidak perlu diisi. Jika dibuka dari halaman web biasa, isi kunci Gemini gratis milik Anda sendiri:</p>
+    <ol class="small" style="padding-left:18px;margin:0 0 10px"><li>Buka <b>aistudio.google.com/apikey</b>, masuk dengan akun Google.</li><li>Klik <b>Create API key</b>, lalu salin kuncinya.</li><li>Tempel di bawah dan simpan.</li></ol>
+    <input type="text" id="keyInput" placeholder="AIza..." autocomplete="off" value="${esc(oldV||apiKey())}">
+    <p class="small" style="margin:8px 0 0">Kunci hanya disimpan di browser Anda dan dikirim langsung ke Google, tidak ke pihak lain.</p>
+    <div class="actions" style="justify-content:flex-end"><button class="btn warn sm" data-act="keyClear">Hapus kunci</button><button class="btn alt" data-act="keyClose">Tutup</button><button class="btn" data-act="keySave">Simpan</button></div></div></div>`;
+  if(S.lightbox) h += `<div class="modal" style="align-items:start;overflow:auto"><div class="box" style="max-width:520px;margin:auto"><img src="${S.lightbox.src}" alt="Gambar" style="width:100%;border-radius:12px;display:block;-webkit-touch-callout:default;user-select:auto">
+    <p class="small" style="margin:10px 0">Tekan dan tahan gambar di atas, lalu pilih <b>Simpan gambar</b> / <b>Unduh gambar</b>.</p>
+    <div class="actions" style="justify-content:flex-end;margin-top:6px"><button class="btn alt sm" data-act="lbDl">Coba unduh langsung</button><button class="btn" data-act="lbClose">Tutup</button></div></div></div>`;
+  document.getElementById("overlay").innerHTML = h;
+}
+
+/* ================== EVENTS ================== */
+document.addEventListener("input",e=>{
+  const t = e.target;
+  if(t.dataset.b===undefined || t.type==="radio") return;
+  let v = t.value;
+  if(t.dataset.list) v = v.split(",").map(x=>x.trim()).filter(Boolean);
+  setPath(S.p,t.dataset.b,v);
+  const m = t.dataset.b.match(/^scenes\.(\d+)\.dialog/);
+  if(m){ const el=document.getElementById("warn-"+m[1]); if(el) el.textContent = warnText(S.p.scenes[+m[1]]); }
+  if(t.dataset.b==="meta.topik"){ const b=document.querySelector('[data-act="ideas"]'); if(b && !S.busy) b.disabled = !String(v).trim(); }
+  if(t.dataset.b==="ide.judul"){ const b=document.querySelector('[data-act="story"]'); if(b && !S.busy) b.disabled = !String(v).trim(); }
+  if(t.dataset.sheet!==undefined){ const el=document.getElementById("sheet-"+t.dataset.sheet); if(el) el.value = sheetPrompt(S.p.chars[+t.dataset.sheet]); }
+  save();
+});
+document.addEventListener("change",e=>{
+  const t = e.target;
+  if(t.dataset.done!==undefined){ S.p.scenes[+t.dataset.done].done = t.checked; save(); render(); return; }
+  if(t.dataset.b===undefined) return;
+  let v = t.value; if(t.dataset.num) v = parseFloat(v);
+  setPath(S.p,t.dataset.b,v); save();
+  if(t.dataset.rerender || t.tagName==="SELECT") render();
+});
+document.addEventListener("click",e=>{
+  const b = e.target.closest("[data-act]"); if(!b || b.disabled) return;
+  if(b.tagName==="A") e.preventDefault();
+  const a = b.dataset.act, i = +b.dataset.i, j = +b.dataset.j, p = S.p;
+  switch(a){
+    case "start": p.started=true; save(); render(); break;
+    case "goto": S.step=i; S.err=""; save(); render(); break;
+    case "pickIdea": { const x=p.ideas[i]; p.ide={judul:x.judul,sinopsis:x.sinopsis+(x.hook?" Pembuka: "+x.hook:"")}; p.tokoh=x.tokohSaran||[]; save(); render(); showToast("Ide dipilih"); break; }
+    case "ideas": run("Membuat ide...",genIdeas); break;
+    case "story": {
+      const go = ()=>run("Menyusun storyboard...",genStoryboard);
+      p.scenes.length ? ask("Storyboard lama akan diganti. Lanjutkan?",go) : go(); break; }
+    case "regen": run("Menulis ulang "+(i+1),()=>regenScene(i)); break;
+    case "up": [p.scenes[i-1],p.scenes[i]]=[p.scenes[i],p.scenes[i-1]]; save(); render(); break;
+    case "down": [p.scenes[i+1],p.scenes[i]]=[p.scenes[i],p.scenes[i+1]]; save(); render(); break;
+    case "delScene": ask("Hapus adegan "+(i+1)+"?",()=>{p.scenes.splice(i,1);save();render();}); break;
+    case "addScene": p.scenes.push(normScene({judul:"Adegan baru",dialog:[{tokoh:"Narator",teks:""}]})); save(); render(); break;
+    case "addLine": p.scenes[i].dialog.push({tokoh:"Narator",teks:""}); save(); render(); break;
+    case "delLine": p.scenes[i].dialog.splice(j,1); save(); render(); break;
+    case "chars": {
+      const go = ()=>run("Merancang karakter...",genChars);
+      p.chars.length ? ask("Karakter lama akan diganti. Lanjutkan?",go) : go(); break; }
+    case "addChar": p.chars.push({nama:"Tokoh baru",peran:"",deskripsi_en:"",ide:""}); save(); render(); break;
+    case "delChar": p.chars.splice(i,1); S.imgs={}; S.sugg={}; save(); render(); break;
+    case "suggest": run("Membuat saran "+i,()=>charSuggest(i)); break;
+    case "fromIdea": run("Membuat deskripsi "+i,()=>charFromIdea(i)); break;
+    case "useSugg": p.chars[i].deskripsi_en = S.sugg[i][+b.dataset.k].deskripsi_en; save(); render(); showToast("Deskripsi dipakai"); break;
+    case "sceneImg": run("Gambar adegan "+i,()=>sceneImage(i)); break;
+    case "upImg": pickImage(i,"simgs"); break;
+    case "upSheet": pickImage(i,"imgs"); break;
+    case "allImg": run("Semua gambar",allImages); break;
+    case "dlSceneImg": imgOut(S.simgs[i],"adegan-"+String(i+1).padStart(2,"0")+".png"); break;
+    case "dlCards": download("kartu-adegan-"+slug(p.ide.judul)+".html",buildCards(),"text/html"); break;
+    case "charImg": run("Membuat gambar "+i,()=>charImage(i)); break;
+    case "dlImg": imgOut(S.imgs[i],"karakter-"+slug(p.chars[i].nama)+".png"); break;
+    case "copyEl": { const el=document.getElementById(b.dataset.el); if(el) copyText(el.value); break; }
+    case "copyAll": copyText(p.scenes.map((sc,n)=>`ADEGAN ${n+1}\n${b.dataset.k==="img"?imagePrompt(sc):videoPrompt(sc)}`).join("\n\n")); break;
+    case "resetP": p.scenes[i][b.dataset.k]=null; save(); render(); break;
+    case "dlPrompts": download("prompt-"+slug(p.ide.judul)+".txt",buildPrompts()); break;
+    case "dlScript": download("naskah-"+slug(p.ide.judul)+".txt",buildScript()); break;
+    case "copyPrompts": copyText(buildPrompts()); break;
+    case "copyScript": copyText(buildScript()); break;
+    case "exportProject": download("proyek-"+slug(p.ide.judul)+".json",JSON.stringify(p,null,2),"application/json"); break;
+    case "importProject": pickFile(); break;
+    case "newProject": ask("Mulai proyek baru? Proyek sekarang akan dihapus dari browser. Simpan dulu bila perlu.",()=>{S.p=newProject();S.p.started=true;S.step=0;save();render();}); break;
+    case "cYes": { const f=S.confirm&&S.confirm.fn; S.confirm=null; renderOverlay(); if(f) f(); break; }
+    case "cNo": S.confirm=null; renderOverlay(); break;
+    case "keyOpen": S.keyDlg=true; renderOverlay(); break;
+    case "keyClose": S.keyDlg=false; renderOverlay(); break;
+    case "keySave": { const v=(document.getElementById("keyInput")||{}).value||""; setApiKey(v.trim()); S.keyDlg=false; S.err=""; renderOverlay(); render(true); showToast(v.trim()?"Kunci disimpan":"Kunci dihapus"); break; }
+    case "keyClear": setApiKey(""); S.keyDlg=false; renderOverlay(); showToast("Kunci dihapus"); break;
+    case "lbClose": S.lightbox=null; renderOverlay(); break;
+    case "lbDl": if(S.lightbox) saveImage(S.lightbox.src,S.lightbox.name); break;
+  }
+});
+// Di HP: tampilkan gambar di dalam app (tanpa pindah halaman) agar progres tidak hilang; di laptop: unduh langsung.
+function imgOut(dataUrl,name){
+  const touch = window.matchMedia && matchMedia("(pointer:coarse)").matches;
+  if(touch){ S.lightbox={src:dataUrl,name}; renderOverlay(); }
+  else saveImage(dataUrl,name);
+}
+function saveImage(dataUrl,name){
+  try{
+    const m = /^data:(.+?);base64,(.+)$/.exec(dataUrl);
+    const bin = atob(m[2]), arr = new Uint8Array(bin.length);
+    for(let k=0;k<bin.length;k++) arr[k]=bin.charCodeAt(k);
+    const url = URL.createObjectURL(new Blob([arr],{type:m[1]}));
+    const a = document.createElement("a"); a.href=url; a.download=name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    showToast("Gambar diunduh. Jika tidak muncul, klik kanan gambar > Simpan gambar.");
+  }catch(e){
+    showToast("Unduh diblokir browser. Klik kanan gambar > Simpan gambar sebagai.");
+  }
+}
+function pickImage(i,store){
+  const inp = document.createElement("input"); inp.type="file"; inp.accept="image/*";
+  inp.onchange = ()=>{
+    const f = inp.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{ S[store][i]=r.result; save(); render(true); showToast("Gambar dipasang"); };
+    r.readAsDataURL(f);
+  };
+  inp.click();
+}
+function buildCards(){
+  const p=S.p, e=esc;
+  const cards = p.scenes.map((sc,i)=>`<section><h2>Adegan ${i+1}: ${e(sc.judul)} <small>(${sc.detik||8} detik)</small></h2>
+${S.simgs[i]?`<img src="${S.simgs[i]}" alt="Adegan ${i+1}">`:`<div class="ph">Gambar belum ada</div>`}
+<h3>Prompt video (salin ke Omni)</h3><pre>${e(videoPrompt(sc))}</pre>
+${sc.layar?`<p class="ov">Teks di layar (tambahkan di editor): <b>${e(sc.layar)}</b></p>`:""}
+<details><summary>Prompt gambar</summary><pre>${e(imagePrompt(sc))}</pre></details></section>`).join("\n");
+  return `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${e(p.ide.judul)} - Kartu adegan</title>
+<style>body{font-family:system-ui,sans-serif;max-width:820px;margin:0 auto;padding:16px;color:#1f2a37;background:#f6f3ec}section{background:#fff;border:1px solid #e4dfd3;border-radius:14px;padding:16px;margin:16px 0;page-break-inside:avoid}h1{color:#0b5a54}h2{margin:0 0 8px;font-size:18px}h2 small{color:#667085;font-weight:400}h3{font-size:14px;margin:12px 0 4px}img{max-width:100%;max-height:520px;border-radius:12px;display:block}.ph{background:#eef2f1;border-radius:12px;padding:30px;text-align:center;color:#667085}pre{white-space:pre-wrap;word-wrap:break-word;background:#fbfaf6;border:1px solid #e4dfd3;border-radius:10px;padding:12px;font-size:13px;margin:0}.ov{background:#fdf0d9;border-radius:8px;padding:8px 10px;font-size:14px}</style></head><body>
+<h1>${e(p.ide.judul)}</h1><p>${e(p.meta.mapel)} | ${e(p.meta.jenjang)} | Gaya ${e(STYLES[p.gaya].l)} | Rasio ${e(p.meta.rasio)}</p>
+${cards}</body></html>`;
+}
+function pickFile(){
+  const inp = document.createElement("input"); inp.type="file"; inp.accept=".json,application/json";
+  inp.onchange = ()=>{
+    const f = inp.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      try{
+        const d = JSON.parse(r.result);
+        if(!d.meta || !Array.isArray(d.scenes)) throw new Error("format");
+        S.p = Object.assign(newProject(),d); S.p.started=true; S.step=0; save(); render(); showToast("Proyek dibuka");
+      }catch(e){ showToast("File bukan proyek Ruang Cerita Guru."); }
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+/* ================== MULAI ================== */
+load();
+render();
+restoreImgs();
+</script>
+</body>
+</html>
