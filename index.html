@@ -295,17 +295,49 @@ async function postApi(models,body,method){
       try{ r = await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); }
       catch(e){ last=new Error("tidak ada koneksi internet"); await sleep(Math.pow(2,k)*800); continue; }
       if(r.ok) return r.json();
-      if(r.status===404){ last=new Error("model tidak tersedia (404)"); break; }
+      if(r.status===404){ last=new Error("model tidak tersedia (404)"); last.status=404; break; }
       if(r.status===400||r.status===401||r.status===403){
         let msg=""; try{ msg=(await r.json()).error.message||""; }catch(e){}
         const e=new Error("HTTP "+r.status+(msg?": "+msg.slice(0,140):""));
         e.auth = (r.status!==400) || /api key|API_KEY/i.test(msg);
         throw e;
       }
-      last=new Error("HTTP "+r.status); await sleep(Math.pow(2,k)*1000);
+      let m2=""; try{ m2=(await r.json()).error.message||""; }catch(e){} last=new Error("HTTP "+r.status+(m2?": "+m2.slice(0,140):"")); last.status=r.status; await sleep(Math.pow(2,k)*1000);
     }
   }
   throw last||new Error("gagal");
+}
+let MODEL_CACHE=null;
+async function listModels(){
+  if(MODEL_CACHE) return MODEL_CACHE;
+  try{
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key="+encodeURIComponent(apiKey()));
+    if(!r.ok){ MODEL_CACHE=[]; return MODEL_CACHE; }
+    const j = await r.json();
+    MODEL_CACHE = (j.models||[]).map(m=>({name:String(m.name||"").replace("models/",""),methods:m.supportedGenerationMethods||[]}));
+  }catch(e){ MODEL_CACHE=[]; }
+  return MODEL_CACHE;
+}
+// Jika nama model bawaan tidak ada (404), tanyakan ke Google model apa yang tersedia untuk kunci ini.
+async function discover(kind,tried){
+  const all = await listModels();
+  let c;
+  if(kind==="image") c = all.filter(m=>/image/i.test(m.name) && !/imagen/i.test(m.name) && m.methods.includes("generateContent"));
+  else if(kind==="imagen") c = all.filter(m=>/imagen/i.test(m.name) && m.methods.includes("predict"));
+  else c = all.filter(m=>/^gemini-.*flash/i.test(m.name) && !/image|tts|live|audio|native|embed|robotics|computer/i.test(m.name) && m.methods.includes("generateContent"));
+  const names = c.map(m=>m.name).filter(n=>!tried.includes(n));
+  // utamakan versi stabil (tanpa preview/exp), lalu nama terbaru
+  names.sort((a,b)=>{ const pa=/preview|exp/i.test(a)?1:0, pb=/preview|exp/i.test(b)?1:0; return pa-pb || b.localeCompare(a); });
+  return names;
+}
+async function postWithDiscovery(base,kind,body,method){
+  try{ return await postApi(base,body,method); }
+  catch(e){
+    if(e.status!==404) throw e;
+    const more = await discover(kind,base);
+    if(!more.length) throw e;
+    return await postApi(more.slice(0,4),body,method);
+  }
 }
 async function gemini(prompt){
   const body = {
@@ -313,7 +345,7 @@ async function gemini(prompt){
     systemInstruction:{parts:[{text:SYSTEM}]},
     generationConfig:{responseMimeType:"application/json",temperature:0.9}
   };
-  const j = await postApi(MODELS,body);
+  const j = await postWithDiscovery(MODELS,"text",body);
   const t = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts[0].text;
   if(!t) throw new Error("Respons kosong");
   return parseJSON(t);
@@ -420,15 +452,23 @@ Format JSON: {"deskripsi_en":""}`;
   const r = await gemini(prompt);
   if(r.deskripsi_en) c.deskripsi_en = r.deskripsi_en;
 }
+function imgFail(e){
+  const m=String((e&&e.message)||"");
+  let why="Pembuat gambar tidak bisa dipakai dengan kunci ini.";
+  if(/429|quota|RESOURCE_EXHAUSTED|limit/i.test(m)) why="Jatah membuat gambar pada kunci gratis Anda habis atau belum tersedia.";
+  else if(/billing|paid|permission|403|not supported|INVALID_ARGUMENT/i.test(m)) why="Kunci gratis umumnya tidak mencakup pembuatan gambar.";
+  else if(/404/.test(m)) why="Model gambar tidak tersedia untuk kunci ini.";
+  return new Error(why+" Solusi: buat gambarnya gratis di Google Flow (tombol Buka Google Flow), lalu klik Unggah gambar di sini. ["+m.slice(0,90)+"]");
+}
 async function imagenGen(prompt,ratio){
   try{
-    const j = await postApi(["imagen-4.0-generate-001"],{instances:[{prompt}],parameters:{sampleCount:1,aspectRatio:ratio}},"predict");
+    const j = await postWithDiscovery(["imagen-4.0-generate-001"],"imagen",{instances:[{prompt}],parameters:{sampleCount:1,aspectRatio:ratio}},"predict");
     const b = j.predictions && j.predictions[0] && j.predictions[0].bytesBase64Encoded;
     if(!b) throw new Error("gambar kosong");
     return "data:image/png;base64,"+b;
   }catch(e){
-    if(e.auth) throw e;
-    throw new Error("pembuat gambar belum tersedia ("+(e.message||"")+"). Buat gambarnya langsung di Flow, lalu unggah di sini");
+    if(e.auth && /api key|API_KEY|unauthenticated/i.test(e.message||"")) throw e;
+    throw imgFail(e);
   }
 }
 async function genImage(prompt,ratio,refs){
@@ -438,14 +478,14 @@ async function genImage(prompt,ratio,refs){
   parts.push({text:(parts.length?"Use the attached reference image(s) to keep every character exactly the same: face, hair, skin tone, clothing and colors. ":"")+prompt+" Output image aspect ratio "+ratio+"."});
   const body = {contents:[{parts}],generationConfig:{responseModalities:["IMAGE"]}};
   try{
-    const j = await postApi(IMG_MODELS,body);
+    const j = await postWithDiscovery(IMG_MODELS,"image",body);
     const ps = (j.candidates&&j.candidates[0]&&j.candidates[0].content&&j.candidates[0].content.parts)||[];
     const im = ps.find(x=>x.inlineData||x.inline_data);
     const d = im && (im.inlineData||im.inline_data);
     if(!d || !d.data) throw new Error("gambar kosong");
     return "data:"+(d.mimeType||d.mime_type||"image/png")+";base64,"+d.data;
   }catch(e){
-    if(e.auth) throw e;
+    if(e.auth && /api key|API_KEY|unauthenticated/i.test(e.message||"")) throw e;
     return imagenGen(prompt,ratio); // cadangan: tanpa referensi
   }
 }
@@ -671,7 +711,7 @@ function stepPrompt(){
     <h3 style="margin-top:18px"><span class="tag">TAHAP ②</span><span class="tag v">③</span>Gambar lalu video, adegan demi adegan</h3>
     <div class="okbox">Progres di Flow: <b>${doneN}/${p.scenes.length}</b> adegan selesai.</div>
     ${p.chars.some((c,i)=>S.imgs[i])?"":`<div class="note">Belum ada gambar character sheet. Buat atau unggah dulu di langkah 3 agar tokoh di semua gambar adegan konsisten.</div>`}
-    <div class="actions">${S.busy.startsWith("Semua gambar")?`<button class="btn" disabled><span class="spin"></span>${esc(S.busy)}</button>`:btn("allImg","🎨 Buat semua gambar adegan",""," ")}${btn("copyAll","Salin semua prompt video","alt sm",`data-k="vid"`)}</div>
+    <div class="actions">${S.busy.startsWith("Semua gambar")?`<button class="btn" disabled><span class="spin"></span>${esc(S.busy)}</button>`:btn("allImg","🎨 Buat semua gambar adegan",""," ")}${btn("copyAll","Salin semua prompt video","alt sm",`data-k="vid"`)}${btn("openFlow","↗ Buka Google Flow","alt sm")}</div>
     ${p.scenes.map((sc,i)=>`<div class="scene"><div class="hd"><div class="no">${i+1}</div><b style="flex:1">${esc(sc.judul)}</b><label class="chk"><input type="checkbox" data-done="${i}" ${sc.done?"checked":""}>Selesai</label></div>
       <div class="chips">${(sc.tokoh||[]).map(t=>`<span>${esc(t)}</span>`).join("")}<span>${sc.detik||8} detik</span></div>
       <div class="pbox"><span class="tag">GAMBAR ADEGAN</span>
@@ -830,6 +870,7 @@ document.addEventListener("click",e=>{
     case "newProject": ask("Mulai proyek baru? Proyek sekarang akan dihapus dari browser. Simpan dulu bila perlu.",()=>{S.p=newProject();S.p.started=true;S.step=0;save();render();}); break;
     case "cYes": { const f=S.confirm&&S.confirm.fn; S.confirm=null; renderOverlay(); if(f) f(); break; }
     case "cNo": S.confirm=null; renderOverlay(); break;
+    case "openFlow": window.open("https://labs.google/fx/tools/flow","_blank","noopener"); break;
     case "keyOpen": S.keyDlg=true; renderOverlay(); break;
     case "keyClose": S.keyDlg=false; renderOverlay(); break;
     case "keySave": { const v=(document.getElementById("keyInput")||{}).value||""; setApiKey(v.trim()); S.keyDlg=false; S.err=""; renderOverlay(); render(true); showToast(v.trim()?"Kunci disimpan":"Kunci dihapus"); break; }
